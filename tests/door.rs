@@ -31,7 +31,8 @@ const UPDATES: [(&[u8], &[u8]); 5] = [
     ),
 ];
 fn authority() -> AuthenticatedOrigin {
-    let first: Value = serde_json::from_slice(include_bytes!("fixtures/publishing-root.json")).unwrap();
+    let first: Value =
+        serde_json::from_slice(include_bytes!("fixtures/publishing-root.json")).unwrap();
     let ring: Vec<u8> = serde_json::from_value(first["key_ring"].clone()).unwrap();
     AuthenticatedOrigin::from_authenticated_response(
         ORIGIN,
@@ -114,16 +115,22 @@ fn original_door_device_bundles_admit_through_assurance_and_guard() {
     let mut assurance = Assurance::new(ORIGIN, "alpha", config()).unwrap();
     let authority = authority();
     let fetch = assurance.start(NOW).unwrap();
-    assurance.on_feed(fetch.id(), INITIAL, &authority, NOW).unwrap();
+    assurance
+        .on_feed(fetch.id(), INITIAL, &authority, NOW)
+        .unwrap();
     let mut now = NOW;
     let mut last = None;
     for ((announcement, feed), capture) in UPDATES.iter().zip(bundles) {
         now += 2;
         let poll = assurance.next(now).unwrap().unwrap();
-        assurance.on_announcement(poll.id(), announcement, now).unwrap();
+        assurance
+            .on_announcement(poll.id(), announcement, now)
+            .unwrap();
         assert_eq!(assurance.current(now).unwrap_err(), Error::Unavailable);
         let fetch = assurance.next(now).unwrap().unwrap();
-        assurance.on_feed(fetch.id(), feed, &authority, now).unwrap();
+        assurance
+            .on_feed(fetch.id(), feed, &authority, now)
+            .unwrap();
         let capture: Value = serde_json::from_slice(capture).unwrap();
         let bundle: cgrd::Bundle = serde_json::from_value(capture["bundle"].clone()).unwrap();
         let action = capture["action"].as_str().unwrap();
@@ -135,24 +142,36 @@ fn original_door_device_bundles_admit_through_assurance_and_guard() {
         changed.payload.push(b' ');
         assert_eq!(
             cgrd::check_published(&changed, &policy, schema),
-            cgrd::Admission::Refused { reasons: vec![cgrd::Refusal::Binding] }
+            cgrd::Admission::Refused {
+                reasons: vec![cgrd::Refusal::Binding]
+            }
         );
         last = Some((bundle, action.to_owned()));
     }
     now += 2;
     let (announcement, feed) = UPDATES[4];
     let poll = assurance.next(now).unwrap().unwrap();
-    assurance.on_announcement(poll.id(), announcement, now).unwrap();
+    assurance
+        .on_announcement(poll.id(), announcement, now)
+        .unwrap();
     assert_eq!(assurance.current(now).unwrap_err(), Error::Unavailable);
     let fetch = assurance.next(now).unwrap().unwrap();
-    assurance.on_feed(fetch.id(), feed, &authority, now).unwrap();
+    assurance
+        .on_feed(fetch.id(), feed, &authority, now)
+        .unwrap();
     let (bundle, action) = last.unwrap();
     let current = assurance.current(now).unwrap();
     let policy = current.admission_policy(&action, now, 86_400).unwrap();
     // Last-device revocation advances the policy epoch, invalidating this old bundle.
     assert_eq!(
-        cgrd::check_published(&bundle, &policy, current.publication(Kind::Schema).signed_bytes()),
-        cgrd::Admission::Refused { reasons: vec![cgrd::Refusal::Version] }
+        cgrd::check_published(
+            &bundle,
+            &policy,
+            current.publication(Kind::Schema).signed_bytes()
+        ),
+        cgrd::Admission::Refused {
+            reasons: vec![cgrd::Refusal::Version]
+        }
     );
     assert_eq!(assurance.current(now + 61).unwrap_err(), Error::Unavailable);
 }
