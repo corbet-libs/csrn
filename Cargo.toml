@@ -11,10 +11,9 @@ publish = false
 [features]
 default = []
 http = ["dep:reqwest"]
-door-vectors = []
 
 [dependencies]
-cchr = { git = "https://github.com/corbet-foss/cchr", rev = "5101b910e4342ea7f82e4af802f4681bff04996d" }
+cchr = { git = "https://github.com/corbet-foss/cchr", rev = "d3593482c1bdb085c19171d6b95835e698ef769c" }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 url = "2"

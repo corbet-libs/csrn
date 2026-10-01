@@ -1,4 +1,4 @@
-//! Unnamed, extractable trust-feed state machine. No background I/O or member data.
+//! Extractable Envoy trust-feed state machine. No background I/O or member data.
 use crate::{Error, Result};
 use cchr::{AuthenticatedOrigin, Charter};
 use serde::Deserialize;

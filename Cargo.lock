@@ -182,7 +182,7 @@ dependencies = [
 [[package]]
 name = "cchr"
 version = "0.1.0"
-source = "git+https://github.com/corbet-foss/cchr?rev=5101b910e4342ea7f82e4af802f4681bff04996d#5101b910e4342ea7f82e4af802f4681bff04996d"
+source = "git+https://github.com/corbet-foss/cchr?rev=d3593482c1bdb085c19171d6b95835e698ef769c#d3593482c1bdb085c19171d6b95835e698ef769c"
 dependencies = [
  "csgn",
  "cshm",

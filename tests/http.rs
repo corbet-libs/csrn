@@ -112,3 +112,37 @@ async fn redirect_and_oversize_responses_are_refused() {
     assert!(Http::new("http://localhost", "alpha").is_err());
     assert!(Http::new("https://user@localhost", "alpha").is_err());
 }
+
+#[tokio::test]
+async fn chunked_announcements_enforce_the_bound_without_a_length_header() {
+    let body = vec![b' '; 2048];
+    let mut reply = format!(
+        "HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\nConnection: close\r\n\r\n{:x}\r\n",
+        body.len()
+    )
+    .into_bytes();
+    reply.extend_from_slice(&body);
+    reply.extend_from_slice(b"\r\n0\r\n\r\n");
+    let (origin, root, server) = server(reply).await;
+    let http = Http::with_roots(&origin, "alpha", &[root]).unwrap();
+    let mut a = Assurance::new(&origin, "alpha", config()).unwrap();
+    let initial = a.start(NOW).unwrap();
+    let mut s = signer();
+    let wire = bytes(&feed(&mut s, 10, 1));
+    let trusted = csrn::cchr::AuthenticatedOrigin::from_authenticated_response(
+        &origin,
+        "alpha",
+        &s.key_ring().to_cbor(),
+        1,
+        NOW,
+        NOW + 60,
+    )
+    .unwrap();
+    a.on_feed(initial.id(), &wire, &trusted, NOW).unwrap();
+    let poll = a.next(NOW + 2).unwrap().unwrap();
+    assert!(matches!(
+        http.execute(poll, NOW + 2).await,
+        Err(Error::Response)
+    ));
+    assert!(server.await.unwrap().starts_with("POST /v1/trust_changes "));
+}

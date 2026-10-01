@@ -1,7 +1,8 @@
 # Assurance contract as implemented
 
 FSL facade: `Assurance` only wires `cchr::Charter` and `feed::Follower`. The feed
-module awaits a final library name and extraction. Neither stores member data,
+module is the planned **cnvy (Envoy)** library and remains here pending extraction.
+Neither stores member data,
 keys, logs, a duplicate trust revision or a policy evaluator.
 
 ## API and ports
@@ -15,7 +16,10 @@ thread, singleton storage or network task is started. No unused storage port is
 invented for this volatile machine; a server restart starts unbootstrapped.
 
 The injected network port is an owned `Request` output and a matching completion
-input. Request exposes only operation ID, Fetch or Poll(public revision), exact
+input. `on_change` must come from the configured public feed; a member epoch hint
+must come from already verified credential metadata, never an arbitrary member
+request integer. A false high hint can deny availability until restart, but
+cannot grant authority. Request exposes only operation ID, Fetch or Poll(public revision), exact
 existing cvld path/body and exclusive deadline. The enclosing runtime must cancel
 transport at that deadline or on stop/change; dropping a native execute future
 cancels its I/O. Follower's operation ID also rejects any late completion. It
@@ -80,7 +84,17 @@ wasm32 build and identical deterministic state-machine vectors on wasm. Tests
 exercise startup, changes, expiry, loss, delay, repeated failures, bounded storms,
 clock regression, cancellation/stop/restart, obsolete replies, malformed events,
 corruption and signed rollback. Native HTTPS tests use real local TLS and verify
-request privacy, origin bootstrap, redirect and oversized-response refusal.
+request privacy, origin bootstrap, redirect and oversized-response refusal,
+including chunked bodies without Content-Length.
+
+Native and wasm also replay unchanged bytes from the running cvld door producer
+in cchr CI: unchanged feed after registration/issuance/renewal, followed by
+all/any/threshold policy edits, schema change and last-passkey revocation with
+their actual announcements. These exercise the full follower→Charter path.
+The csrn job replays captures; cchr separately launches the actual door.
+`tests/fixtures/provenance.json` records immutable producer/door revisions, CI
+source and per-file SHA-256; CI verifies these hashes before testing. No mocked
+verification verdicts or cvld server dependency enter the consumer graph.
 
 G1 remains open at the cgrd/cvld owner: the guard needs a verified-input adapter
 for the original full cplc policy plus separate revocations. No re-signing, lossy

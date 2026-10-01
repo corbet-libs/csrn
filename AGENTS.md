@@ -4,7 +4,7 @@ Write code, comments and documentation in English.
 
 ## Product boundary
 
-- Assurance: wire Charter and the unnamed trust-feed module; keep the facade thin.
+- Assurance: wire Charter and the trust-feed module (planned cnvy extraction); keep the facade thin.
 - Read docs/CONTRACT.md before changing the public boundary.
 - Survey maintained libraries first; record candidates and reasons in README.md.
 - Reuse csgn verification and cshm schema semantics. No cryptographic primitives.

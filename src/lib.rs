@@ -1,4 +1,4 @@
-//! Assurance wires Charter and the unnamed feed follower. Domain logic stays below.
+//! Assurance wires Charter and the feed follower. Domain logic stays below.
 #![forbid(unsafe_code)]
 pub mod feed;
 #[cfg(all(feature = "http", not(target_arch = "wasm32")))]

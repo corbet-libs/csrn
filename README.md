@@ -1,8 +1,8 @@
 # csrn — Assurance
 
 A thin Rust facade connecting [Charter](https://github.com/corbet-foss/cchr) to
-cvld's public trust feed. The follower lives in `feed` until it has a final
-library name; it owns retries, cancellation and scheduling. Assurance owns no
+cvld's public trust feed. The follower lives in `feed`, ready for extraction as
+**cnvy — Envoy**; it owns retries, cancellation and scheduling. Assurance owns no
 second policy evaluator, trust revision, member registry or database.
 
 The caller supplies Unix time and executes returned `Request` values. Only
@@ -37,8 +37,9 @@ FSL-1.1-ALv2. Nothing is published to a registry.
 
 ## Reuse and candidates
 
-Reuse cchr/csgn/cshm for trust verification and schema semantics. Extract the feed
-module after naming it; no speculative package is created. cvld's actual public
+Reuse cchr/csgn/cshm for trust verification and schema semantics. The feed
+module is ready for its planned cnvy extraction; this repository currently keeps
+the requested module boundary. cvld's actual public
 POST actions are the protocol. Importing its server package into the runtime
 would couple a device consumer to issuer secrets/storage and the server graph.
 
@@ -53,3 +54,12 @@ transitions deterministic and testable without a runtime or hidden wall clock.
 The guard integration remains unavailable: cgrd cannot yet consume cplc's full
 policy and separate revocations. `VerifiedCharter::admission_policy()` returns
 `UnsupportedPolicy`. A fresh publication is not itself a positive admission.
+
+## Real door evidence
+
+Native and wasm tests replay unchanged public feed and announcement bytes from
+[Charter’s running cvld door tests](https://github.com/corbet-foss/cchr/actions/runs/36879511545).
+They cover all/any/threshold policy edits, schema changes and last-passkey
+revocation; ordinary registration, issuance and renewal leave the feed unchanged.
+[Fixture provenance](tests/fixtures/README.md) records exact producer revisions
+and SHA-256 digests. Three additional native tests run a real local TLS server.
