@@ -63,14 +63,8 @@ impl Assurance {
             .unwrap_or(0);
         self.follower.on_policy_epoch(epoch, current, now)
     }
-    pub fn on_feed(
-        &mut self,
-        id: u64,
-        bytes: &[u8],
-        now: u64,
-    ) -> Result<()> {
-        self.follower
-            .feed(id, bytes, &mut self.charter, now)
+    pub fn on_feed(&mut self, id: u64, bytes: &[u8], now: u64) -> Result<()> {
+        self.follower.feed(id, bytes, &mut self.charter, now)
     }
     pub fn on_announcement(&mut self, id: u64, bytes: &[u8], now: u64) -> Result<()> {
         self.follower.announcement(id, bytes, now)

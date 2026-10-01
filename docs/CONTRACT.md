@@ -104,7 +104,7 @@ for all, any, threshold and schema changes on native and wasm. Payload tampering
 refuses with Binding; the revoked feed invalidates the old epoch with Version.
 Separate Charter/Guard vectors verify member and device Revoked refusals at a
 matching epoch. No signed material is translated or policy reimplemented.
-The full cvld→guard→forum path still requires the door owner's current device
-registration authority and matching signed credential evidence. Production TLS bootstrap provisioning, browser transport and embedding
+The actual door enrollment and signed-bundle path is verified. Production forum
+wiring, deployment publishing-root provisioning, browser transport and embedding
 cancellation/scheduling are adapter integration responsibilities. No deployment,
 registry publication, payments or external test accounts are involved.
