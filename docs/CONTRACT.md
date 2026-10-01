@@ -1,7 +1,7 @@
 # Assurance contract as implemented
 
-FSL facade: `Assurance` only wires `cchr::Charter` and `feed::Follower`. The feed
-module is the planned **cnvy (Envoy)** library and remains here pending extraction.
+FSL facade: `Assurance` only wires `cchr::Charter` and `cnvy::feed::Follower`. `feed` and `http` re-export Envoy APIs for compatibility.
+All follower state transitions and native HTTPS live in the LGPL Envoy leaf.
 Neither stores member data,
 keys, logs, a duplicate trust revision or a policy evaluator.
 
@@ -79,7 +79,7 @@ arithmetic refuses overflow. Fixed errors omit payloads, identifiers and causes.
 
 ## Validation and open work
 
-CI checks immutable, unique first-party pins, fmt, strict Clippy, native tests,
+CI checks main declarations and unique locked first-party revisions, fmt, strict Clippy, native tests,
 wasm32 build and identical deterministic state-machine vectors on wasm. Tests
 exercise startup, changes, expiry, loss, delay, repeated failures, bounded storms,
 clock regression, cancellation/stop/restart, obsolete replies, malformed events,

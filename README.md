@@ -1,8 +1,9 @@
 # csrn — Assurance
 
 A thin Rust facade connecting [Charter](https://github.com/corbet-foss/cchr) to
-cvld's public trust feed. The follower lives in `feed`, ready for extraction as
-**cnvy — Envoy**; it owns retries, cancellation and scheduling. Assurance owns no
+cvld's public trust feed. The follower lives in
+[cnvy — Envoy](https://github.com/corbet-foss/cnvy); it owns retries, cancellation
+and scheduling. The `feed` and `http` modules re-export that leaf. Assurance owns no
 second policy evaluator, trust revision, member registry or database.
 
 The caller supplies Unix time and executes returned `Request` values. Only
@@ -35,11 +36,15 @@ the same synchronous state machine and vectors run on wasm.
 Read [docs/CONTRACT.md](docs/CONTRACT.md) for states, ports, deadlines and limits.
 FSL-1.1-ALv2. Nothing is published to a registry.
 
+## Scope
+
+Wire Charter and Envoy, forwarding operations and deriving readiness from those
+children. Own no retry, network, signature or admission logic.
+
 ## Reuse and candidates
 
-Reuse cchr/csgn/cshm for trust verification and schema semantics. The feed
-module is ready for its planned cnvy extraction; this repository currently keeps
-the requested module boundary. cvld's actual public
+Reuse cchr/csgn/cshm for trust verification and schema semantics. Envoy owns the extracted feed
+state machine and native HTTPS adapter. cvld's actual public
 POST actions are the protocol. Importing its server package into the runtime
 would couple a device consumer to issuer secrets/storage and the server graph.
 
