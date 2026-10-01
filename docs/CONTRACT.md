@@ -100,8 +100,11 @@ verification verdicts or cvld server dependency enter the consumer graph.
 
 Charter exposes a borrowed Guard policy containing the original signed full
 settings and separate revocations. Guard verifies these envelopes, the device
-signature and the profile, then delegates rich policy to Rulebook. These captures
-verify byte preservation; they do not assert admission without a valid bundle.
+signature and the profile, then delegates rich policy to Rulebook. The captured authorized-device bundles now pass the facade→Charter→Guard path
+for all, any, threshold and schema changes on native and wasm. Payload tampering
+refuses with Binding; the revoked feed invalidates the old epoch with Version.
+Separate Charter/Guard vectors verify member and device Revoked refusals at a
+matching epoch. No signed material is translated or policy reimplemented.
 The full cvld→guard→forum path still requires the door owner's current device
 registration authority and matching signed credential evidence. Production TLS bootstrap provisioning, browser transport and embedding
 cancellation/scheduling are adapter integration responsibilities. No deployment,
