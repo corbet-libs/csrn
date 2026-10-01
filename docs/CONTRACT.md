@@ -96,10 +96,11 @@ The csrn job replays captures; cchr separately launches the actual door.
 source and per-file SHA-256; CI verifies these hashes before testing. No mocked
 verification verdicts or cvld server dependency enter the consumer graph.
 
-G1 remains open at the cgrd/cvld owner: the guard needs a verified-input adapter
-for the original full cplc policy plus separate revocations. No re-signing, lossy
-conversion or alternate admission evaluator exists here; attendance must refuse
-`UnsupportedPolicy`. The full cvld→guard→forum acceptance path is therefore not
-claimed. Production TLS bootstrap provisioning, browser transport and embedding
+Charter exposes a borrowed Guard policy containing the original signed full
+settings and separate revocations. Guard verifies these envelopes, the device
+signature and the profile, then delegates rich policy to Rulebook. These captures
+verify byte preservation; they do not assert admission without a valid bundle.
+The full cvld→guard→forum path still requires the door owner's current device
+registration authority and matching signed credential evidence. Production TLS bootstrap provisioning, browser transport and embedding
 cancellation/scheduling are adapter integration responsibilities. No deployment,
 registry publication, payments or external test accounts are involved.

@@ -56,9 +56,11 @@ backoff can schedule retries, but do not own the required response-generation,
 announcement and Charter freshness state; a small explicit machine keeps these
 transitions deterministic and testable without a runtime or hidden wall clock.
 
-The guard integration remains unavailable: cgrd cannot yet consume cplc's full
-policy and separate revocations. `VerifiedCharter::admission_policy()` returns
-`UnsupportedPolicy`. A fresh publication is not itself a positive admission.
+`VerifiedCharter::admission_policy(action, now, maximum_snapshot_age)` borrows the
+original signed full policy and separate revocations for Guard. Guard delegates
+policy to Rulebook and requires a valid credential, device signature and profile.
+A fresh publication alone is not positive admission; current door device
+registration remains an integration requirement.
 
 ## Real door evidence
 

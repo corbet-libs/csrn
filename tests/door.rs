@@ -78,9 +78,14 @@ fn real_door_policy_schema_and_revocation_announcements_drive_the_follower() {
             current.publication(Kind::Settings).signed_bytes(),
             serde_json::from_value::<Vec<u8>>(raw["settings"].clone()).unwrap()
         );
+        let policy = current.admission_policy("admission", now, 86_400).unwrap();
         assert_eq!(
-            current.admission_policy(),
-            Err(TrustError::UnsupportedPolicy)
+            policy.policy.settings,
+            current.publication(Kind::Settings).signed_bytes()
+        );
+        assert_eq!(
+            policy.revocations,
+            current.publication(Kind::Revocations).signed_bytes()
         );
         assert_eq!(
             a.on_announcement(poll.id(), announcement, now),
