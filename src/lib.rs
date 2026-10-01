@@ -1,11 +1,11 @@
 //! Assurance wires Charter and the feed follower. Domain logic stays below.
 #![forbid(unsafe_code)]
+pub use cchr;
 pub use cnvy::feed;
 #[cfg(all(feature = "http", not(target_arch = "wasm32")))]
 pub use cnvy::http;
-pub use cchr;
-use feed::{Config, Follower, Request};
 pub use cnvy::{Error, Result};
+use feed::{Config, Follower, Request};
 pub struct Assurance {
     charter: cchr::Charter,
     follower: Follower,
