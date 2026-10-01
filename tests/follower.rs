@@ -11,6 +11,7 @@ fn config() -> Config {
         request_seconds: 26,
         initial_backoff_seconds: 2,
         maximum_backoff_seconds: 16,
+        retry_entropy: 0,
         maximum_staleness_seconds: 60,
     }
 }
