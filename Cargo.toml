@@ -14,7 +14,7 @@ http = ["dep:reqwest"]
 door-vectors = []
 
 [dependencies]
-cchr = { git = "https://github.com/corbet-foss/cchr", rev = "12f3ccdbaf7d5d288441fe917f72cdd8dcfaf729" }
+cchr = { git = "https://github.com/corbet-foss/cchr", rev = "5101b910e4342ea7f82e4af802f4681bff04996d" }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 url = "2"

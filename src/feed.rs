@@ -91,6 +91,7 @@ pub struct Follower {
     last_success: Option<u64>,
     retry_delay: u64,
     target_revision: u64,
+    target_epoch: u64,
 }
 impl Follower {
     pub fn new(config: Config) -> Result<Self> {
@@ -106,6 +107,7 @@ impl Follower {
             last_success: None,
             retry_delay: config.initial_backoff_seconds,
             target_revision: 0,
+            target_epoch: 0,
         })
     }
     fn observe(&mut self, now: u64) -> Result<()> {
@@ -140,6 +142,7 @@ impl Follower {
         }
         self.last_success = None;
         self.target_revision = 0;
+        self.target_epoch = 0;
         self.next_refresh = now;
         self.retry_delay = self.config.initial_backoff_seconds;
         self.request(Action::Fetch, now)
@@ -231,6 +234,36 @@ impl Follower {
         }
         Ok(())
     }
+    /// Explicit refresh, also used when a member presents a newer policy epoch.
+    pub fn refresh(&mut self, now: u64) -> Result<()> {
+        self.observe(now)?;
+        if self.state == State::Stopped {
+            return Err(Error::Stopped);
+        }
+        if self
+            .pending
+            .is_some_and(|p| matches!(p.action, Action::Poll { .. }))
+        {
+            self.pending = None;
+        }
+        if self.state != State::Backoff {
+            self.next_attempt = now;
+        }
+        self.next_refresh = now;
+        Ok(())
+    }
+    /// Epoch hints cannot become verified authority or bypass retry limits.
+    pub fn on_policy_epoch(&mut self, epoch: u64, current_epoch: u64, now: u64) -> Result<()> {
+        self.observe(now)?;
+        if self.state == State::Stopped {
+            return Err(Error::Stopped);
+        }
+        if epoch > current_epoch {
+            self.target_epoch = self.target_epoch.max(epoch);
+            self.refresh(now)?;
+        }
+        Ok(())
+    }
     pub fn feed(
         &mut self,
         id: u64,
@@ -245,9 +278,13 @@ impl Follower {
             return Err(Error::Response);
         }
         match charter.install(bytes, authority, now) {
-            Ok(v) if v.revision() >= self.target_revision => {
+            Ok(v)
+                if v.revision() >= self.target_revision
+                    && v.policy_epoch() >= self.target_epoch =>
+            {
                 self.last_success = Some(now);
                 self.target_revision = 0;
+                self.target_epoch = 0;
                 self.next_refresh = now
                     .checked_add(self.config.refresh_seconds)
                     .ok_or(Error::Exhausted)?;
@@ -297,10 +334,11 @@ impl Follower {
         self.state
     }
     /// Facade readiness derives from this freshness budget and Charter's deadline.
-    pub fn permits_current(&mut self, revision: u64, now: u64) -> Result<()> {
+    pub fn permits_current(&mut self, revision: u64, epoch: u64, now: u64) -> Result<()> {
         self.observe(now)?;
         if self.state == State::Stopped
             || self.target_revision > revision
+            || self.target_epoch > epoch
             || !self.last_success.is_some_and(|last| {
                 now.saturating_sub(last) < self.config.maximum_staleness_seconds
             })

@@ -137,3 +137,28 @@ fn malformed_announcements_and_corrupt_feed_cannot_become_trust() {
     a.on_change(11, NOW + 4).unwrap();
     assert!(a.current(NOW + 4).is_err());
 }
+
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen_test::wasm_bindgen_test)]
+#[cfg_attr(not(target_arch = "wasm32"), test)]
+fn member_epoch_hint_forces_refresh_without_becoming_authority() {
+    let (mut a, mut s) = ready();
+    let poll = a.next(NOW + 2).unwrap().unwrap();
+    a.on_policy_epoch(2, NOW + 2).unwrap();
+    assert!(a.current(NOW + 2).is_err());
+    assert_eq!(
+        a.on_announcement(poll.id(), b"{}", NOW + 2),
+        Err(Error::Obsolete)
+    );
+    let refresh = a.next(NOW + 2).unwrap().unwrap();
+    let old = feed(&mut s, 11, 1);
+    assert_eq!(
+        a.on_feed(refresh.id(), &bytes(&old), &authority(&s), NOW + 2),
+        Err(Error::BehindAnnouncement)
+    );
+    assert!(a.current(NOW + 2).is_err());
+    let fresh = a.next(NOW + 4).unwrap().unwrap();
+    let new = feed(&mut s, 12, 2);
+    a.on_feed(fresh.id(), &bytes(&new), &authority(&s), NOW + 4)
+        .unwrap();
+    assert_eq!(a.current(NOW + 4).unwrap().policy_epoch(), 2);
+}

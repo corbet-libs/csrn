@@ -8,7 +8,7 @@ keys, logs, a duplicate trust revision or a policy evaluator.
 
 `Assurance::new(origin, community, Config)`, `start(now)`, `next(now)`,
 `on_feed(id, bytes, authenticated_origin, now)`, `on_announcement(id, bytes, now)`,
-`on_change(revision, now)`, `on_error(id, now, jitter)`, `current(now)`, `stop()`.
+`on_change(revision, now)`, `on_policy_epoch(epoch, now)`, `refresh(now)`, `on_error(id, now, jitter)`, `current(now)`, `stop()`.
 Config contains explicit refresh, minimum poll, request, backoff and maximum
 staleness durations. All times are injected Unix seconds. No timer, background
 thread, singleton storage or network task is started. No unused storage port is
@@ -50,8 +50,9 @@ derived from both children, not a second persisted trust state.
 A poll response is at most 1024 bytes, rejects duplicate/unknown fields and must
 have a positive epoch, nondecreasing revision and `changed` exactly matching a
 higher revision. Announcements are hints, not signed material or permanent floors.
-A newer revision fences a pending poll and requests a feed promptly; hints cannot
-bypass backoff. A fetched publication behind a hint cannot restore readiness.
+A newer revision or member-presented policy epoch fences a pending poll and
+requests a feed promptly; hints cannot
+bypass backoff. A fetched publication behind either revision or epoch hint cannot restore readiness.
 A periodic fetch runs even when announcements are lost. Empty/unchanged polls
 are spaced by the configured minimum interval, preventing immediate-reply loops.
 

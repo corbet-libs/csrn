@@ -46,7 +46,8 @@ impl Assurance {
     }
     pub fn current(&mut self, now: u64) -> Result<&cchr::VerifiedCharter> {
         let value = self.charter.current(now).map_err(Error::Trust)?;
-        self.follower.permits_current(value.revision(), now)?;
+        self.follower
+            .permits_current(value.revision(), value.policy_epoch(), now)?;
         Ok(value)
     }
     pub fn next(&mut self, now: u64) -> Result<Option<Request>> {
@@ -56,6 +57,17 @@ impl Assurance {
     pub fn on_change(&mut self, revision: u64, now: u64) -> Result<()> {
         let current = self.charter.current(now).map(|v| v.revision()).unwrap_or(0);
         self.follower.on_change(revision, current, now)
+    }
+    pub fn refresh(&mut self, now: u64) -> Result<()> {
+        self.follower.refresh(now)
+    }
+    pub fn on_policy_epoch(&mut self, epoch: u64, now: u64) -> Result<()> {
+        let current = self
+            .charter
+            .current(now)
+            .map(|v| v.policy_epoch())
+            .unwrap_or(0);
+        self.follower.on_policy_epoch(epoch, current, now)
     }
     pub fn on_feed(
         &mut self,
