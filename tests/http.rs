@@ -182,7 +182,8 @@ async fn announcement_response_is_only_a_hint() {
     a.on_feed(initial.id(), &wire, NOW).unwrap();
     let poll = a.next(NOW + 2).unwrap().unwrap();
     let received = http.execute(poll, NOW + 2).await.unwrap();
-    a.on_announcement(poll.id(), received.bytes(), NOW + 2).unwrap();
+    a.on_announcement(poll.id(), received.bytes(), NOW + 2)
+        .unwrap();
     assert_eq!(a.current(NOW + 2).unwrap().revision(), 10);
     server.await.unwrap();
 }
@@ -225,12 +226,25 @@ fn malformed_operator_certificate_is_rejected_by_the_real_tls_builder() {
 
 #[tokio::test]
 async fn real_tls_requires_json_media_type_even_for_a_success_response() {
-    for content_type in [None, Some("text/html"), Some("application/jsonish"), Some("APPLICATION/JSON; charset=utf-8")] {
-        let header = content_type.map(|value| format!("Content-Type: {value}\r\n")).unwrap_or_default();
-        let reply = format!("HTTP/1.1 200 OK\r\n{header}Content-Length: 2\r\nConnection: close\r\n\r\n{{}}").into_bytes();
+    for content_type in [
+        None,
+        Some("text/html"),
+        Some("application/jsonish"),
+        Some("APPLICATION/JSON; charset=utf-8"),
+    ] {
+        let header = content_type
+            .map(|value| format!("Content-Type: {value}\r\n"))
+            .unwrap_or_default();
+        let reply = format!(
+            "HTTP/1.1 200 OK\r\n{header}Content-Length: 2\r\nConnection: close\r\n\r\n{{}}"
+        )
+        .into_bytes();
         let (origin, root, server) = server(reply).await;
         let http = Http::with_roots(&configuration(&origin, "alpha"), &[root]).unwrap();
-        let request = csrn::feed::Follower::new(config()).unwrap().start(NOW).unwrap();
+        let request = csrn::feed::Follower::new(config())
+            .unwrap()
+            .start(NOW)
+            .unwrap();
         let response = http.execute(request, NOW).await;
         if content_type == Some("APPLICATION/JSON; charset=utf-8") {
             assert_eq!(response.unwrap().bytes(), b"{}");
@@ -244,8 +258,12 @@ async fn real_tls_requires_json_media_type_even_for_a_success_response() {
 #[tokio::test]
 async fn valid_tls_does_not_authorize_a_forged_publishing_ring() {
     let mut attacker = csgn::Signer::new(
-        "alpha", csgn::SecretKey::from_seed(&mut [99; 32]), NOW - 1, 1000,
-    ).unwrap();
+        "alpha",
+        csgn::SecretKey::from_seed(&mut [99; 32]),
+        NOW - 1,
+        1000,
+    )
+    .unwrap();
     let content = bytes(&feed(&mut attacker, 10, 1));
     let mut reply = format!(
         "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",

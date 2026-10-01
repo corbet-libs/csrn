@@ -31,11 +31,14 @@ const UPDATES: [(&[u8], &[u8]); 5] = [
     ),
 ];
 fn configuration() -> Configuration {
-    let root: Value = serde_json::from_slice(include_bytes!("fixtures/publishing-root.json")).unwrap();
+    let root: Value =
+        serde_json::from_slice(include_bytes!("fixtures/publishing-root.json")).unwrap();
     Configuration {
-        origin: ORIGIN.into(), community: "alpha".into(),
+        origin: ORIGIN.into(),
+        community: "alpha".into(),
         key_ring: serde_json::from_value(root["key_ring"].clone()).unwrap(),
-        minimum_revision: root["minimum_revision"].as_u64().unwrap(), ring_revision: 0,
+        minimum_revision: root["minimum_revision"].as_u64().unwrap(),
+        ring_revision: 0,
     }
 }
 fn config() -> Config {
@@ -108,9 +111,7 @@ fn original_door_device_bundles_admit_through_assurance_and_guard() {
     ];
     let mut assurance = Assurance::new(configuration(), config()).unwrap();
     let fetch = assurance.start(NOW).unwrap();
-    assurance
-        .on_feed(fetch.id(), INITIAL, NOW)
-        .unwrap();
+    assurance.on_feed(fetch.id(), INITIAL, NOW).unwrap();
     let mut now = NOW;
     let mut last = None;
     for ((announcement, feed), capture) in UPDATES.iter().zip(bundles) {
@@ -121,9 +122,7 @@ fn original_door_device_bundles_admit_through_assurance_and_guard() {
             .unwrap();
         assert_eq!(assurance.current(now).unwrap_err(), Error::Unavailable);
         let fetch = assurance.next(now).unwrap().unwrap();
-        assurance
-            .on_feed(fetch.id(), feed, now)
-            .unwrap();
+        assurance.on_feed(fetch.id(), feed, now).unwrap();
         let capture: Value = serde_json::from_slice(capture).unwrap();
         let bundle: cgrd::Bundle = serde_json::from_value(capture["bundle"].clone()).unwrap();
         let action = capture["action"].as_str().unwrap();
@@ -149,9 +148,7 @@ fn original_door_device_bundles_admit_through_assurance_and_guard() {
         .unwrap();
     assert_eq!(assurance.current(now).unwrap_err(), Error::Unavailable);
     let fetch = assurance.next(now).unwrap().unwrap();
-    assurance
-        .on_feed(fetch.id(), feed, now)
-        .unwrap();
+    assurance.on_feed(fetch.id(), feed, now).unwrap();
     let (bundle, action) = last.unwrap();
     let current = assurance.current(now).unwrap();
     let policy = current.admission_policy(&action, now, 86_400).unwrap();

@@ -20,8 +20,7 @@ fn ready() -> (Assurance, csgn::Signer) {
     let feed = feed(&mut signer, 10, 1);
     let mut a = Assurance::new(configuration(ORIGIN, "alpha"), config()).unwrap();
     let request = a.start(NOW).unwrap();
-    a.on_feed(request.id(), &bytes(&feed), NOW)
-        .unwrap();
+    a.on_feed(request.id(), &bytes(&feed), NOW).unwrap();
     (a, signer)
 }
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen_test::wasm_bindgen_test)]
@@ -45,8 +44,7 @@ fn startup_announcements_and_atomic_install() {
     assert_eq!(request.action(), Action::Fetch);
     assert_eq!(request.body(), serde_json::json!({}));
     let current = feed(&mut s, 11, 2);
-    a.on_feed(request.id(), &bytes(&current), NOW + 2)
-        .unwrap();
+    a.on_feed(request.id(), &bytes(&current), NOW + 2).unwrap();
     assert_eq!(a.current(NOW + 2).unwrap().revision(), 11);
     assert_eq!(
         a.on_announcement(poll.id(), br#"{}"#, NOW + 2),
@@ -129,10 +127,7 @@ fn malformed_announcements_and_corrupt_feed_cannot_become_trust() {
     );
     assert_eq!(a.current(NOW + 2).unwrap().revision(), 10);
     let fetch = a.next(NOW + 4).unwrap().unwrap();
-    assert!(
-        a.on_feed(fetch.id(), b"{}", NOW + 4)
-            .is_err()
-    );
+    assert!(a.on_feed(fetch.id(), b"{}", NOW + 4).is_err());
     assert_eq!(a.current(NOW + 4).unwrap().revision(), 10);
     a.on_change(11, NOW + 4).unwrap();
     assert!(a.current(NOW + 4).is_err());
@@ -158,8 +153,7 @@ fn member_epoch_hint_forces_refresh_without_becoming_authority() {
     assert!(a.current(NOW + 2).is_err());
     let fresh = a.next(NOW + 4).unwrap().unwrap();
     let new = feed(&mut s, 12, 2);
-    a.on_feed(fresh.id(), &bytes(&new), NOW + 4)
-        .unwrap();
+    a.on_feed(fresh.id(), &bytes(&new), NOW + 4).unwrap();
     assert_eq!(a.current(NOW + 4).unwrap().policy_epoch(), 2);
 }
 
