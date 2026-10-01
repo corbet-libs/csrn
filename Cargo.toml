@@ -1,0 +1,35 @@
+[package]
+name = "csrn"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.88"
+description = "Assurance: Charter and a bounded community trust-feed follower"
+license = "FSL-1.1-ALv2"
+repository = "https://github.com/corbet-libs/csrn"
+publish = false
+
+[features]
+default = []
+http = ["dep:reqwest"]
+door-vectors = []
+
+[dependencies]
+cchr = { git = "https://github.com/corbet-foss/cchr", rev = "12f3ccdbaf7d5d288441fe917f72cdd8dcfaf729" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+url = "2"
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+reqwest = { version = "0.12", optional = true, default-features = false, features = ["json", "rustls-tls"] }
+
+[dev-dependencies]
+csgn = { git = "https://github.com/corbet-foss/csgn", rev = "564898cfb5b08a30c34821139a08d41884f231b2", default-features = false, features = ["volatile-signer"] }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dev-dependencies]
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "net", "io-util", "time"] }
+
+[target.'cfg(target_arch = "wasm32")'.dev-dependencies]
+wasm-bindgen-test = "0.3"
+
+[lints.rust]
+unsafe_code = "forbid"
