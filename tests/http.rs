@@ -94,6 +94,8 @@ async fn real_https_fetch_bootstraps_without_member_headers_or_redirects() {
     let trace = server.await.unwrap().to_lowercase();
     assert!(trace.starts_with("post /v1/trust_feed http/1.1"));
     assert!(trace.contains("user-agent: community-trust-client/1.0"));
+    assert!(trace.contains("cache-control: no-cache, no-store"));
+    assert!(trace.contains("pragma: no-cache"));
     assert!(!trace.contains("authorization:"));
     assert!(!trace.contains("cookie:"));
     assert!(!trace.contains("referer:"));

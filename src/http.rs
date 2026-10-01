@@ -91,7 +91,8 @@ impl Http {
         let mut response = self
             .client
             .post(format!("{}{}", self.origin, request.path()))
-            .header("Cache-Control", "no-store")
+            .header("Cache-Control", "no-cache, no-store")
+            .header("Pragma", "no-cache")
             .header("Accept", "application/json")
             .json(&request.body())
             .timeout(Duration::from_secs(remaining))
