@@ -1,7 +1,5 @@
 # csrn — Assurance
 
-## Scope
-
 A thin Rust facade connecting [Charter](https://github.com/corbet-foss/cchr) to
 cvld's public trust feed. The follower lives in
 [cnvy — Envoy](https://github.com/corbet-foss/cnvy); it owns retries, cancellation
