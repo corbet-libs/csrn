@@ -63,3 +63,15 @@ They cover all/any/threshold policy edits, schema changes and last-passkey
 revocation; ordinary registration, issuance and renewal leave the feed unchanged.
 [Fixture provenance](tests/fixtures/README.md) records exact producer revisions
 and SHA-256 digests. Three additional native tests run a real local TLS server.
+
+## Dependency maintenance and coverage
+
+First-party dependencies follow `main`; Cargo.lock records one exact revision
+per crate. CI checks the entire resolved graph, including optional declarations.
+Dependabot covers Cargo and GitHub Actions (there is no npm manifest here).
+The merge workflow uses GitHub metadata only and requires every substantive CI
+job and all published checks to succeed on the exact Dependabot head. It never
+executes PR code with write permissions or bypasses branch protection.
+
+[cargo-llvm-cov](https://github.com/taiki-e/cargo-llvm-cov) supplies LLVM line and
+branch measurements; the strict gate and exclusions are in [COVERAGE.md](docs/COVERAGE.md).
