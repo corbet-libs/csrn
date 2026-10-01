@@ -182,7 +182,7 @@ dependencies = [
 [[package]]
 name = "cchr"
 version = "0.1.0"
-source = "git+https://github.com/corbet-foss/cchr?rev=d3593482c1bdb085c19171d6b95835e698ef769c#d3593482c1bdb085c19171d6b95835e698ef769c"
+source = "git+https://github.com/corbet-foss/cchr?branch=main#17d8547f6befda3b935b85bde283fbfcf38f33b2"
 dependencies = [
  "csgn",
  "cshm",
@@ -242,6 +242,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "cnvy"
+version = "0.1.0"
+source = "git+https://github.com/corbet-foss/cnvy?branch=main#bf9f3f990cd108f2468bde6c38046736b6d7f603"
+dependencies = [
+ "cchr",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "url",
+]
+
+[[package]]
 name = "coset"
 version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -278,7 +290,7 @@ dependencies = [
 [[package]]
 name = "csgn"
 version = "0.0.0"
-source = "git+https://github.com/corbet-foss/csgn?rev=564898cfb5b08a30c34821139a08d41884f231b2#564898cfb5b08a30c34821139a08d41884f231b2"
+source = "git+https://github.com/corbet-foss/csgn?branch=main#eac891b771152b17aa3a903edfe9c129e43a371e"
 dependencies = [
  "ciborium-ll",
  "coset",
@@ -291,7 +303,7 @@ dependencies = [
 [[package]]
 name = "cshm"
 version = "0.0.0"
-source = "git+https://github.com/corbet-foss/cshm?rev=ded9507a56db5b3a4fb92383a578c6b624e36e76#ded9507a56db5b3a4fb92383a578c6b624e36e76"
+source = "git+https://github.com/corbet-foss/cshm?branch=main#9fe8a3271ddecf0846d888d038645a55687c2111"
 dependencies = [
  "bigdecimal",
  "jsonschema",
@@ -305,14 +317,12 @@ name = "csrn"
 version = "0.1.0"
 dependencies = [
  "cchr",
+ "cnvy",
  "csgn",
  "rcgen",
- "reqwest",
- "serde",
  "serde_json",
  "tokio",
  "tokio-rustls",
- "url",
  "wasm-bindgen-test",
 ]
 
