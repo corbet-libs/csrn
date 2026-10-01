@@ -47,21 +47,29 @@ impl Received {
 }
 impl Http {
     pub fn new(origin: &str, community: &str) -> Result<Self> {
+        Self::with_roots(origin, community, &[])
+    }
+    /// Explicit operator roots supplement the public root store; TLS verification stays on.
+    pub fn with_roots(origin: &str, community: &str, roots: &[Vec<u8>]) -> Result<Self> {
         // Share Charter's strict HTTPS-origin validation.
         cchr::Charter::new(origin, community).map_err(Error::Trust)?;
         let origin = url::Url::parse(origin)
             .map_err(|_| Error::Configuration)?
             .origin()
             .ascii_serialization();
-        let client = reqwest::Client::builder()
+        let mut builder = reqwest::Client::builder()
             .redirect(reqwest::redirect::Policy::none())
             .https_only(true)
             .referer(false)
             .no_proxy()
             .user_agent("community-trust-client/1.0")
-            .connect_timeout(Duration::from_secs(10))
-            .build()
-            .map_err(|_| Error::Network)?;
+            .connect_timeout(Duration::from_secs(10));
+        for der in roots {
+            builder = builder.add_root_certificate(
+                reqwest::Certificate::from_der(der).map_err(|_| Error::Configuration)?,
+            );
+        }
+        let client = builder.build().map_err(|_| Error::Network)?;
         Ok(Self {
             client,
             origin,
