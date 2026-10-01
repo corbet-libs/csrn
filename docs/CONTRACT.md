@@ -11,7 +11,7 @@ keys, logs, a duplicate trust revision or a policy evaluator.
 `on_feed(id, bytes, authenticated_origin, now)`, `on_announcement(id, bytes, now)`,
 `on_change(revision, now)`, `on_policy_epoch(epoch, now)`, `refresh(now)`, `on_error(id, now, jitter)`, `current(now)`, `readiness(now)`, `stop()`.
 Config contains explicit refresh, minimum poll, request, backoff and maximum
-staleness durations. All times are injected Unix seconds. No timer, background
+staleness durations, plus injected per-instance `retry_entropy`. All times are injected Unix seconds. No timer, background
 thread, singleton storage or network task is started. No unused storage port is
 invented for this volatile machine; a server restart starts unbootstrapped.
 
@@ -32,7 +32,7 @@ referrer, no retry middleware, a generic User-Agent, ten-second connect timeout
 and remaining request deadline as total timeout. Only configured origin plus the
 two fixed paths can be requested. Body collection is checked chunk by chunk, not
 merely against Content-Length: at most cchr's 32 MiB for a feed and 1024 bytes for
-an announcement. All non-success statuses fail. Explicit operator CA roots may
+an announcement. All non-success statuses and missing/non-JSON Content-Type values fail. Explicit operator CA roots may
 supplement the public store; certificate and hostname checks stay enabled.
 
 A `Received` has no public constructor. Its `authority(receive_time, fresh_for)`
