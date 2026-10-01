@@ -119,7 +119,7 @@ jobs:
         with:
           name: coverage
           path: coverage.json
-      - run: python3 .github/check-coverage.py coverage.json
+      - run: python3 .github/check-coverage.py coverage.json --branchless-facade
   dependency-policy:
     needs: resolve
     runs-on: ubuntu-24.04
