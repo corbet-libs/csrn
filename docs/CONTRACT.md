@@ -9,7 +9,7 @@ keys, logs, a duplicate trust revision or a policy evaluator.
 
 `Assurance::new(origin, community, Config)`, `start(now)`, `next(now)`,
 `on_feed(id, bytes, authenticated_origin, now)`, `on_announcement(id, bytes, now)`,
-`on_change(revision, now)`, `on_policy_epoch(epoch, now)`, `refresh(now)`, `on_error(id, now, jitter)`, `current(now)`, `stop()`.
+`on_change(revision, now)`, `on_policy_epoch(epoch, now)`, `refresh(now)`, `on_error(id, now, jitter)`, `current(now)`, `readiness(now)`, `stop()`.
 Config contains explicit refresh, minimum poll, request, backoff and maximum
 staleness durations. All times are injected Unix seconds. No timer, background
 thread, singleton storage or network task is started. No unused storage port is
@@ -49,7 +49,9 @@ Stopped → Fetching → Following. Network, invalid trust, malformed announceme
 wrong response kind or timeout → Backoff. No known fresh charter, expired signed
 material, newer announced revision, clock regression or exceeded maximum staleness
 makes the facade Unavailable. Follower's state describes I/O; facade readiness is
-derived from both children, not a second persisted trust state.
+derived from both children, not a second persisted trust state. `readiness(now)`
+returns Unready before any verified Charter, Current only while both children
+permit it, and Unavailable for stale, stopped or invalid current material.
 
 A poll response is at most 1024 bytes, rejects duplicate/unknown fields and must
 have a positive epoch, nondecreasing revision and `changed` exactly matching a
